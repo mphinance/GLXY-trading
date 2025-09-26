@@ -1,10 +1,11 @@
-//@version=5
+//@version=6
 indicator("GLXY Trade Alerts — Entry/Breakout/BTC Momentum", overlay=true)
 
 // User inputs
 entry_low = input.float(25.00, "Entry Zone Low", step=0.01)
 entry_high = input.float(28.00, "Entry Zone High", step=0.01)
-breakout_level = input.float(35.00, "Breakout Level", step=0.01)
+breakout_low = input.float(35.00, "Breakout Zone Low", step=0.01)
+breakout_high = input.float(38.00, "Breakout Zone High", step=0.01)
 structural_stop = input.float(22.00, "Structural Stop", step=0.01)
 vol_len = input.int(20, "Volume Avg Length")
 vol_mult = input.float(1.25, "Volume Multiplier")
@@ -24,7 +25,7 @@ rsi_ok = ta.rsi(close, 14) > ta.rsi(close, 14)[1]  // RSI rising
 entry_signal = in_entry_zone and bullish_candle and rsi_ok
 
 // Breakout condition with volume filter
-breakout_signal = (close > breakout_level) and (vol > vol_avg * vol_mult)
+breakout_signal = (close > breakout_low) and (vol > vol_avg * vol_mult)
 
 // BTC momentum (daily) — use security/request
 btc_close = request.security(btc_symbol, timeframe.period, close)
@@ -42,10 +43,17 @@ alertcondition(breakout_with_btc, title="GLXY Breakout + BTC Momentum", message=
 alertcondition(close < structural_stop, title="GLXY Structural Stop Hit", message="GLXY broken structural stop — consider exit")
 
 // Plotting for visuals
-plotshape(entry_signal, title="Entry", location=location.belowbar, color=color.new(color.green,10), style=shape.labelup, text="Entry")
-plotshape(breakout_signal, title="Breakout", location=location.abovebar, color=color.new(color.blue,10), style=shape.labeldown, text="Breakout")
+plotshape(entry_signal, title="Entry", location=location.belowbar, color=color.new(color.green, 10), style=shape.labelup, text="Entry")
+plotshape(breakout_signal, title="Breakout", location=location.abovebar, color=color.new(color.blue, 10), style=shape.labeldown, text="Breakout")
 plot(close, title="Close")
-hline(entry_low, "Entry Low", color=color.green)
-hline(entry_high, "Entry High", color=color.green)
-hline(breakout_level, "Breakout Level", color=color.blue)
-hline(structural_stop, "Stop", color=color.red)
+
+// Plotting horizontal lines with thicker width
+plot_entry_low = plot(entry_low, "Entry Low", color=color.green, linewidth=2)
+plot_entry_high = plot(entry_high, "Entry High", color=color.green, linewidth=2)
+plot_breakout_low = plot(breakout_low, "Breakout Zone Low", color=color.blue, linewidth=2)
+plot_breakout_high = plot(breakout_high, "Breakout Zone High", color=color.blue, linewidth=2)
+plot_stop = plot(structural_stop, "Stop", color=color.red, linewidth=2)
+
+// Fill colored zones
+fill(plot_entry_low, plot_entry_high, color.new(color.green, 90), title="Entry Zone")
+fill(plot_breakout_low, plot_breakout_high, color.new(color.blue, 90), title="Breakout Zone")
