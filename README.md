@@ -10,29 +10,31 @@ This Pine Script indicator is designed for the TradingView platform to provide v
 
 * **Structural Stop:** A critical support level where a break below can trigger an alert, suggesting a potential exit.
 
+* **Technical Indicators:** The script uses a Relative Strength Index (RSI) with a period of `14` to check for a rising trend. It also uses a Simple Moving Average (SMA) of volume over `20` periods as part of the volume filter.
+
 * **BTC Momentum:** The script checks for a significant daily percentage change in BTC to provide an additional layer of confirmation for breakout signals.
 
 * **Visuals:** The indicator plots horizontal lines for key levels and uses shaded zones to clearly highlight the Entry and Breakout zones on the chart. Upward and downward facing labels mark entry and breakout signals.
 
 ## User Inputs
 
-* `Entry Zone Low`: The lower bound of the entry zone.
+* `Entry Zone Low`: The lower bound of the entry zone. (Default: 25.00)
 
-* `Entry Zone High`: The upper bound of the entry zone.
+* `Entry Zone High`: The upper bound of the entry zone. (Default: 28.00)
 
-* `Breakout Zone Low`: The lower bound of the breakout zone.
+* `Breakout Zone Low`: The lower bound of the breakout zone. (Default: 35.00)
 
-* `Breakout Zone High`: The upper bound of the breakout zone.
+* `Breakout Zone High`: The upper bound of the breakout zone. (Default: 38.00)
 
-* `Structural Stop`: The price level for the structural stop.
+* `Structural Stop`: The price level for the structural stop. (Default: 22.00)
 
-* `Volume Avg Length`: The length of the moving average used to calculate average volume.
+* `Volume Avg Length`: The length of the moving average used to calculate average volume. (Default: 20)
 
-* `Volume Multiplier`: The multiplier used to confirm a breakout signal with volume.
+* `Volume Multiplier`: The multiplier used to confirm a breakout signal with volume. (Default: 1.25)
 
-* `BTC Symbol`: The symbol for BTC used for momentum checks (e.g., `BINANCE:BTCUSD`).
+* `BTC Symbol`: The symbol for BTC used for momentum checks (e.g., `BINANCE:BTCUSD`). (Default: `BINANCE:BTCUSD`)
 
-* `BTC daily % threshold to consider momentum`: The percentage change in BTC required to trigger the momentum confirmation.
+* `BTC daily % threshold to consider momentum`: The percentage change in BTC required to trigger the momentum confirmation. (Default: 8.0)
 
 ## Alerts
 
