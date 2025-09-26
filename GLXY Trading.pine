@@ -1,0 +1,51 @@
+//@version=5
+indicator("GLXY Trade Alerts — Entry/Breakout/BTC Momentum", overlay=true)
+
+// User inputs
+entry_low = input.float(25.00, "Entry Zone Low", step=0.01)
+entry_high = input.float(28.00, "Entry Zone High", step=0.01)
+breakout_level = input.float(35.00, "Breakout Level", step=0.01)
+structural_stop = input.float(22.00, "Structural Stop", step=0.01)
+vol_len = input.int(20, "Volume Avg Length")
+vol_mult = input.float(1.25, "Volume Multiplier")
+btc_symbol = input.symbol("BINANCE:BTCUSD", "BTC Symbol for momentum checks")
+btc_pct_thresh = input.float(8.0, "BTC daily % threshold to consider momentum")
+
+// Chart data
+price = close
+vol = volume
+vol_avg = ta.sma(vol, vol_len)
+
+// Entry zone condition (simple)
+in_entry_zone = price >= entry_low and price <= entry_high
+bullish_candle = close > open
+rsi_ok = ta.rsi(close, 14) > ta.rsi(close, 14)[1]  // RSI rising
+
+entry_signal = in_entry_zone and bullish_candle and rsi_ok
+
+// Breakout condition with volume filter
+breakout_signal = (close > breakout_level) and (vol > vol_avg * vol_mult)
+
+// BTC momentum (daily) — use security/request
+btc_close = request.security(btc_symbol, timeframe.period, close)
+btc_prev = request.security(btc_symbol, timeframe.period, close[1])
+btc_pct = 100 * (btc_close - btc_prev) / btc_prev
+btc_momentum = btc_pct >= btc_pct_thresh
+
+// Combined add condition: breakout with BTC confirmation
+breakout_with_btc = breakout_signal and btc_momentum
+
+// Alerts
+alertcondition(entry_signal, title="GLXY Entry Zone Signal", message="GLXY in entry zone with bullish candle & RSI rising")
+alertcondition(breakout_signal, title="GLXY Breakout", message="GLXY breakout above breakout level with volume")
+alertcondition(breakout_with_btc, title="GLXY Breakout + BTC Momentum", message="GLXY breakout with BTC momentum confirmation")
+alertcondition(close < structural_stop, title="GLXY Structural Stop Hit", message="GLXY broken structural stop — consider exit")
+
+// Plotting for visuals
+plotshape(entry_signal, title="Entry", location=location.belowbar, color=color.new(color.green,10), style=shape.labelup, text="Entry")
+plotshape(breakout_signal, title="Breakout", location=location.abovebar, color=color.new(color.blue,10), style=shape.labeldown, text="Breakout")
+plot(close, title="Close")
+hline(entry_low, "Entry Low", color=color.green)
+hline(entry_high, "Entry High", color=color.green)
+hline(breakout_level, "Breakout Level", color=color.blue)
+hline(structural_stop, "Stop", color=color.red)
